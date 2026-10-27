@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lucky Draw">
+<meta name="theme-color" content="#e3e7ea">
+<title>Hire Lucky Draw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800&family=Share+Tech+Mono&display=swap">
+<style>
+/* Layout: arcade cabinet centre stage, winners board beside it; stacks on phones. Single deliberate look (booth light). */
+:root{
+  --bg1:#e3e7ea; --bg2:#a3adb4;
+  --ink:#24313d; --ink-soft:#56636e;
+  --cab:#5f88a8; --cab-d:#4b7090; --steel:#c9d3da;
+  --glass:#e4ecef; --cream:#f6efd9; --teal:#a9d3c8; --star:#f2c14e; --red:#d6534a;
+  --paper:#fbfaf6; --line:#d5dade;
+  --gold:#f2c14e; --silver:#c7d0d8; --bronze:#d39a6a; --grey:#b9c3ca;
+  --display:"Lilita One", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"Share Tech Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{background:linear-gradient(180deg,var(--bg1) 0%,var(--bg1) 55%,var(--bg2) 100%) fixed;background-color:var(--bg1);color:var(--ink);font-family:var(--body);font-size:15px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 40px}
+.layout{display:grid;grid-template-columns:minmax(0,520px);justify-content:center;gap:28px;align-items:start;margin:0 auto}
+.stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:18px;min-width:0}
+.machine{width:min(100%, 520px, calc((100svh - 215px) * 0.667));min-width:min(100%, 300px);height:auto;display:block;filter:drop-shadow(0 18px 18px rgba(36,49,61,.18))}
+/* Button deck: an arcade control panel in the cabinet's own blue, sitting right under the machine */
+.deck{width:min(100%,280px);margin-top:-8px;background:var(--cab);border:3px solid var(--ink);border-radius:16px;box-shadow:0 5px 0 var(--ink);
+  padding:9px 14px 14px;display:flex;flex-direction:column;align-items:center;gap:9px;position:relative}
+.deck::before{content:"";position:absolute;left:11px;right:11px;top:5px;height:3px;border-radius:2px;background:rgba(255,255,255,.35)}
+.pushTitle{margin:4px 0 0;font-family:var(--body);font-weight:800;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--cream);
+  background:var(--cab-d);border:2px solid var(--ink);border-radius:999px;padding:4px 13px}
+.picks{display:flex;gap:clamp(12px,4vw,18px);justify-content:center;align-items:center}
+.pick{--top:#d6534a;--base:#9a2f27;width:clamp(42px,11vw,48px);aspect-ratio:1;border-radius:50%;border:2.5px solid var(--ink);cursor:pointer;position:relative;
+  background:radial-gradient(circle at 38% 30%,rgba(255,255,255,.45) 0 18%,transparent 19%),var(--top);
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.14),0 4px 0 var(--base),0 4px 0 2.5px var(--ink);
+  display:grid;place-items:center;padding:0;transition:transform .08s, box-shadow .08s, filter .2s;touch-action:manipulation}
+.pick svg{width:52%;height:52%;overflow:visible}
+.pick .ico{fill:var(--cream);stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.pick-star{--top:#f2c14e;--base:#b98a26}.pick-heart{--top:#d6534a;--base:#9a2f27}.pick-clover{--top:#a9d3c8;--base:#6f9f94}
+.pick:hover:not(:disabled){filter:brightness(1.06)}
+.pick:active:not(:disabled){transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.14),0 1px 0 var(--base),0 1px 0 2.5px var(--ink)}
+.pick:disabled{cursor:not-allowed;filter:saturate(.25) brightness(.95)}
+.pick.picked{filter:none;transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.14),0 1px 0 var(--base),0 1px 0 2.5px var(--ink),0 0 0 6px rgba(242,193,78,.5);animation:glow .7s ease-in-out infinite alternate}
+@keyframes glow{from{outline:0 solid rgba(246,239,217,0)}to{outline:4px solid rgba(246,239,217,.55)}}
+.start{font-family:var(--display);font-size:30px;letter-spacing:.06em;color:#fff;background:var(--red);border:3px solid var(--ink);border-radius:999px;
+  padding:12px 56px;box-shadow:0 6px 0 var(--ink);cursor:pointer;transition:transform .08s, box-shadow .08s;text-shadow:0 2px 0 rgba(0,0,0,.2)}
+.start:hover:not(:disabled){filter:brightness(1.06)}
+.start:active:not(:disabled){transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+.start:disabled{background:#a9b1b7;cursor:not-allowed}
+.start:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--star);outline-offset:3px}
+.hint{font-size:13px;color:var(--ink-soft);text-align:center;margin:-6px 0 0;min-height:1.3em}
+.hint.warn{color:#9a2f27;font-weight:700}
+
+/* SVG bits */
+.lamp{fill:var(--cream);stroke:var(--ink);stroke-width:1.5}
+.playing .lamp{animation:lamp .5s steps(1) infinite}
+.playing .lamp:nth-child(even){animation-delay:.25s}
+@keyframes lamp{0%{fill:var(--star)}50%{fill:var(--red)}}
+#redBtn{cursor:pointer}
+#redBtn:hover ellipse.top{fill:#e5665d}
+.signText{font-family:var(--display);paint-order:stroke;stroke:var(--ink);stroke-width:7px;stroke-linejoin:round;fill:#fff3d6;letter-spacing:.02em}
+.pillText{font-family:var(--display);fill:#fff;letter-spacing:.14em}
+.goText{font-family:var(--display);fill:#fff;pointer-events:none}
+.dispText{font-family:var(--mono);fill:var(--ink)}
+/* iPad play mode (#play): customers see only the machine and the winners board */
+.kiosk #hostBox{display:none}
+.kiosk .status{justify-content:flex-end}
+
+/* Result card */
+.result{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(36,49,61,.35);border-radius:16px}
+.card{background:var(--paper);border:3px solid var(--ink);border-radius:18px;box-shadow:0 8px 0 var(--ink);padding:22px 22px 20px;max-width:320px;width:100%;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.card .kicker{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.card h2{font-family:var(--display);font-weight:400;font-size:40px;line-height:1.05;margin:0;text-wrap:balance}
+.card p{margin:0;line-height:1.45;color:var(--ink-soft);text-wrap:pretty}
+.card .drawno{font-family:var(--mono);font-size:14px;color:var(--ink)}
+.next{margin-top:8px;font-family:var(--body);font-weight:800;font-size:16px;background:var(--cab);color:#fff;border:3px solid var(--ink);border-radius:999px;padding:10px 28px;box-shadow:0 4px 0 var(--ink);cursor:pointer}
+.next:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+
+/* Board */
+.board{background:var(--paper);border:3px solid var(--ink);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;min-width:0;box-shadow:0 6px 0 rgba(36,49,61,.85)}
+.board h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0;letter-spacing:.02em}
+.rows{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.row{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:12px}
+.row .name{font-weight:800}
+.row .count{font-family:var(--mono);font-size:20px;font-variant-numeric:tabular-nums}
+.row .count small{font-size:13px;color:var(--ink-soft)}
+.chip{width:30px;height:30px}
+.meter{display:flex;justify-content:space-between;align-items:baseline;border-top:2px dashed var(--line);padding-top:14px;font-weight:800}
+.meter span:last-child{font-family:var(--mono);font-size:20px;font-weight:400}
+.board .sub{margin:-10px 0 0;font-size:13px;color:var(--ink-soft)}
+.status{font-size:12.5px;color:var(--ink-soft);display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.status .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#5aa36b;margin-right:6px;vertical-align:1px}
+.status .dot.local{background:var(--star)}
+.mute{font:inherit;font-weight:700;background:none;border:2px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer;color:var(--ink)}
+details{margin-top:-8px}
+details[open]{border-top:2px dashed var(--line);padding-top:4px;margin-top:0}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:flex-end;align-items:center;min-height:32px;color:var(--ink-soft)}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);font-size:18px}
+details[open] summary::after{content:"–"}
+.host{display:flex;flex-direction:column;gap:14px;margin-top:12px}
+.host h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px;color:var(--ink-soft)}
+.log{list-style:none;margin:0;padding:0;max-height:200px;overflow:auto;font-size:13.5px;border:2px solid var(--line);border-radius:10px}
+.log li{display:grid;grid-template-columns:48px 1fr auto;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.log li:last-child{border-bottom:0}
+.log li.win{font-weight:800}
+.log .n,.log .t{font-family:var(--mono);color:var(--ink-soft)}
+.log .empty{display:block;color:var(--ink-soft);padding:10px}
+.setup{display:grid;grid-template-columns:repeat(auto-fit,minmax(56px,1fr));gap:8px}
+.setup label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:800;color:var(--ink-soft)}
+.setup input{box-sizing:border-box;min-width:0;width:100%;font-family:var(--mono);font-size:16px;padding:6px 8px;border:2px solid var(--ink);border-radius:8px;background:#fff;color:var(--ink)}
+.reset{font:inherit;font-weight:800;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:9px 12px;cursor:pointer;color:var(--ink)}
+.reset.arm{background:var(--red);color:#fff}
+.note{font-size:12.5px;color:var(--ink-soft);margin:0;line-height:1.45}
+.result[hidden]{display:none}
+#confetti{position:fixed;inset:0;pointer-events:none;width:100%;height:100%;z-index:50}
+@media (prefers-reduced-motion:reduce){.card{animation:none}.pick.picked{animation:none}.playing .lamp{animation:none;fill:var(--star)}}
+</style>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+[hidden]{display:none!important}
+img{max-width:100%}
+button,#redBtn,summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{-webkit-user-select:none;user-select:none}
+input{-webkit-user-select:text;user-select:text}
+</style>
+</head>
+<body>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+<main class="layout">
+  <section class="stage" aria-label="Lucky draw machine">
+    <svg id="machine" class="machine" viewBox="0 0 400 600" role="img" aria-label="Hire Lucky Draw claw machine">
+      <defs>
+        <clipPath id="glassClip"><rect x="48" y="118" width="304" height="211"/></clipPath>
+        <clipPath id="doorClip"><rect x="80" y="430" width="92" height="74" rx="3"/></clipPath>
+        <symbol id="star" viewBox="-10 -10 20 20"><polygon points="0,-9 2.6,-3.2 8.8,-2.8 4,1.3 5.5,7.4 0,4.1 -5.5,7.4 -4,1.3 -8.8,-2.8 -2.6,-3.2"/></symbol>
+      </defs>
+      <!-- floor shadow -->
+      <ellipse cx="200" cy="586" rx="172" ry="7" fill="#24313d" opacity=".14"/>
+      <!-- marquee: rounded sign box with a badge on top and a striped awning -->
+      <rect x="26" y="16" width="348" height="88" rx="28" fill="#5f88a8" stroke="#24313d" stroke-width="3"/>
+      <path id="bulbPath" d="M40 92 V42 Q40 29 53 29 H347 Q360 29 360 42 V92" fill="none"/>
+      <g id="lamps"></g>
+      <rect x="58" y="40" width="284" height="56" rx="16" fill="#4b7090" stroke="#24313d" stroke-width="2"/>
+      <rect x="140" y="4" width="120" height="36" rx="18" fill="#d6534a" stroke="#24313d" stroke-width="2.5"/>
+      <text class="pillText" x="200" y="31.5" text-anchor="middle" font-size="26">HIRE</text>
+      <text class="signText" x="200" y="86" text-anchor="middle" font-size="35" textLength="244" lengthAdjust="spacingAndGlyphs">LUCKY DRAW</text>
+      <g>
+        <path d="M34.0 100 H64.2 V108 A15.1 8 0 0 1 34.0 108 Z" fill="#f6efd9" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M64.2 100 H94.4 V108 A15.1 8 0 0 1 64.2 108 Z" fill="#d6534a" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M94.4 100 H124.5 V108 A15.1 8 0 0 1 94.4 108 Z" fill="#f6efd9" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M124.5 100 H154.7 V108 A15.1 8 0 0 1 124.5 108 Z" fill="#d6534a" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M154.7 100 H184.9 V108 A15.1 8 0 0 1 154.7 108 Z" fill="#f6efd9" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M184.9 100 H215.1 V108 A15.1 8 0 0 1 184.9 108 Z" fill="#d6534a" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M215.1 100 H245.3 V108 A15.1 8 0 0 1 215.1 108 Z" fill="#f6efd9" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M245.3 100 H275.5 V108 A15.1 8 0 0 1 245.3 108 Z" fill="#d6534a" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M275.5 100 H305.6 V108 A15.1 8 0 0 1 275.5 108 Z" fill="#f6efd9" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M305.6 100 H335.8 V108 A15.1 8 0 0 1 305.6 108 Z" fill="#d6534a" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M335.8 100 H366.0 V108 A15.1 8 0 0 1 335.8 108 Z" fill="#f6efd9" stroke="#24313d" stroke-width="2" stroke-linejoin="round"/>
+      </g>
+      <!-- glass box -->
+      <rect x="46" y="118" width="308" height="212" fill="#e4ecef" stroke="#24313d" stroke-width="2.5"/>
+      <g stroke="#b7c5cc" stroke-width="2" fill="none">
+        <rect x="74" y="140" width="252" height="150" rx="10"/>
+        <line x1="48" y1="120" x2="76" y2="142"/><line x1="352" y1="120" x2="324" y2="142"/>
+        <line x1="48" y1="328" x2="76" y2="288"/><line x1="352" y1="328" x2="324" y2="288"/>
+      </g>
+      <g fill="#d3dde2"><circle cx="110" cy="170" r="3"/><circle cx="140" cy="160" r="3"/><circle cx="290" cy="175" r="3"/><circle cx="262" cy="160" r="3"/></g>
+      <g clip-path="url(#glassClip)">
+        <!-- chute back -->
+        <rect x="52" y="262" width="62" height="70" fill="#d3dee3"/>
+        <g id="balls"></g>
+        <!-- claw -->
+        <g id="claw">
+          <rect x="-20" y="118" width="40" height="12" rx="3" fill="#c9d3da" stroke="#24313d" stroke-width="2"/>
+          <rect x="-11" y="128" width="22" height="7" rx="2" fill="#9aa9b2" stroke="#24313d" stroke-width="2"/>
+          <line id="cable" x1="0" y1="135" x2="0" y2="150" stroke="#24313d" stroke-width="2.5"/>
+          <g id="head">
+            <g id="prongL"><path d="M-8 8 L-24 28 Q-26 40 -12 47" fill="none" stroke="#24313d" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M-8 8 L-24 28 Q-26 40 -12 47" fill="none" stroke="#9aa9b2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+            <g id="prongR"><path d="M8 8 L24 28 Q26 40 12 47" fill="none" stroke="#24313d" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 8 L24 28 Q26 40 12 47" fill="none" stroke="#9aa9b2" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+            <rect x="-14" y="-6" width="28" height="16" rx="5" fill="#c9d3da" stroke="#24313d" stroke-width="2.5"/>
+            <circle cx="0" cy="2" r="3.5" fill="#24313d"/>
+          </g>
+        </g>
+        <!-- chute front pane -->
+        <rect x="52" y="262" width="62" height="70" fill="rgba(255,255,255,.35)"/>
+        <line x1="114" y1="258" x2="114" y2="330" stroke="#24313d" stroke-width="2.5"/>
+        <rect x="50" y="256" width="66" height="7" rx="2" fill="#5f88a8" stroke="#24313d" stroke-width="2"/>
+      </g>
+      <!-- glass shine -->
+      <g stroke="#fff" stroke-opacity=".6" stroke-width="7" stroke-linecap="round"><line x1="262" y1="132" x2="214" y2="198"/><line x1="286" y1="132" x2="252" y2="180"/></g>
+      <rect x="46" y="118" width="308" height="212" fill="none" stroke="#24313d" stroke-width="2.5"/>
+      <rect x="35" y="112" width="13" height="222" rx="6.5" fill="#5f88a8" stroke="#24313d" stroke-width="2.5"/>
+      <rect x="352" y="112" width="13" height="222" rx="6.5" fill="#5f88a8" stroke="#24313d" stroke-width="2.5"/>
+      <g fill="#c9d3da" stroke="#24313d" stroke-width="1.5"><circle cx="41.5" cy="126" r="2.6"/><circle cx="358.5" cy="126" r="2.6"/><circle cx="41.5" cy="320" r="2.6"/><circle cx="358.5" cy="320" r="2.6"/></g>
+      <!-- control ledge -->
+      <path d="M30 330 H370 C380 350 376 380 356 394 H44 C24 380 20 350 30 330 Z" fill="#5f88a8" stroke="#24313d" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M36 337 H364" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="88" cy="374" rx="22" ry="8" fill="#f6efd9" stroke="#24313d" stroke-width="2.5"/>
+      <line x1="88" y1="372" x2="88" y2="350" stroke="#24313d" stroke-width="3.5" stroke-linecap="round"/>
+      <circle cx="88" cy="348" r="9" fill="#d6534a" stroke="#24313d" stroke-width="2.5"/>
+      <g id="redBtn" role="button" tabindex="-1" aria-label="Start">
+        <ellipse cx="152" cy="374" rx="22" ry="9" fill="#9a2f27" stroke="#24313d" stroke-width="2.5"/>
+        <ellipse class="top" cx="152" cy="368" rx="22" ry="9" fill="#d6534a" stroke="#24313d" stroke-width="2.5"/>
+        <text x="152" y="372.5" text-anchor="middle" class="goText" font-size="12">GO</text>
+      </g>
+      <rect x="244" y="348" width="106" height="34" rx="9" fill="#e9efe9" stroke="#24313d" stroke-width="2.5"/>
+      <text id="disp" class="dispText" x="297" y="372" text-anchor="middle" font-size="20">---</text>
+      <text x="297" y="345" text-anchor="middle" font-size="7.5" font-family="Nunito, sans-serif" font-weight="800" fill="#24313d" letter-spacing="1.5">PLAY NO.</text>
+      <!-- lower cabinet -->
+      <path d="M44 394 H356 L345 552 Q344 566 330 566 H70 Q56 566 55 552 Z" fill="#5f88a8" stroke="#24313d" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M47 402 Q97 395 146 402 T246 402 T353 402 L352.4 411 Q297 418 246 411 T146 411 T47.6 411 Z" fill="#f6efd9" opacity=".9"/>
+      <g fill="#c9d3da" stroke="#24313d" stroke-width="1.5"><circle cx="62" cy="426" r="3"/><circle cx="338" cy="426" r="3"/><circle cx="68" cy="550" r="3"/><circle cx="332" cy="550" r="3"/></g>
+      <!-- prize door -->
+      <path d="M68 518 V450 Q68 420 98 420 H154 Q184 420 184 450 V518 Z" fill="#4b7090" stroke="#24313d" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="80" y="430" width="92" height="74" rx="14" fill="#9fb1bb" stroke="#24313d" stroke-width="2"/>
+      <g clip-path="url(#doorClip)"><g id="doorBall" opacity="0"></g></g>
+      <polyline points="118,438 126,445 134,438" fill="none" stroke="#24313d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/>
+      <g stroke="#fff" stroke-opacity=".45" stroke-width="4"><line x1="150" y1="434" x2="126" y2="470"/></g>
+      <!-- speaker grille -->
+      <circle cx="294" cy="468" r="38" fill="#4b7090" stroke="#24313d" stroke-width="2.5"/>
+      <circle cx="294" cy="468" r="28" fill="none" stroke="#3d5d76" stroke-width="2"/>
+      <g fill="#3d5d76"><circle cx="294" cy="468" r="4"/><circle cx="294" cy="454" r="3.4"/><circle cx="294" cy="482" r="3.4"/><circle cx="280" cy="468" r="3.4"/><circle cx="308" cy="468" r="3.4"/><circle cx="284" cy="458" r="3"/><circle cx="304" cy="458" r="3"/><circle cx="284" cy="478" r="3"/><circle cx="304" cy="478" r="3"/></g>
+      <!-- plinth -->
+      <rect x="48" y="564" width="304" height="18" rx="9" fill="#4b7090" stroke="#24313d" stroke-width="2.5"/>
+    </svg>
+
+    <div class="deck">
+    <p class="pushTitle">Push your lucky button</p>
+    <div class="picks" role="group" aria-label="Push your lucky button">
+      <button class="pick pick-star" type="button" disabled aria-label="Star button"><svg viewBox="-12 -12 24 24" aria-hidden="true"><polygon class="ico" points="0,-10 2.9,-3.6 9.9,-3.1 4.5,1.5 6.1,8.4 0,4.6 -6.1,8.4 -4.5,1.5 -9.9,-3.1 -2.9,-3.6"/></svg></button>
+      <button class="pick pick-heart" type="button" disabled aria-label="Heart button"><svg viewBox="-12 -12 24 24" aria-hidden="true"><path class="ico" d="M0 9 C-9 3 -11.5 -3 -8.3 -7 C-5.4 -10.3 -1.3 -9.3 0 -5.4 C1.3 -9.3 5.4 -10.3 8.3 -7 C11.5 -3 9 3 0 9 Z"/></svg></button>
+      <button class="pick pick-clover" type="button" disabled aria-label="Clover button"><svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0.5 3 Q3 9 8 10.5" fill="none" stroke="#24313d" stroke-width="2.2" stroke-linecap="round"/><g class="ico"><circle cx="0" cy="-4.6" r="4.4"/><circle cx="4.6" cy="0" r="4.4"/><circle cx="-4.6" cy="0" r="4.4"/><circle cx="0" cy="4.2" r="4"/></g><circle cx="0" cy="0" r="1.6" fill="#24313d"/></svg></button>
+    </div>
+    </div>
+    <p id="hint" class="hint">Connecting…</p>
+
+    <div id="result" class="result" hidden>
+      <div class="card" role="dialog" aria-modal="true" aria-labelledby="resTitle">
+        <svg id="resBall" width="96" height="96" viewBox="-30 -30 60 60" aria-hidden="true"></svg>
+        <div id="resKicker" class="kicker"></div>
+        <h2 id="resTitle"></h2>
+        <p id="resBody"></p>
+        <div id="resNo" class="drawno"></div>
+        <button id="next" class="next" type="button">Next player</button>
+      </div>
+    </div>
+  </section>
+
+  <aside class="board" aria-label="Winners board">
+    <h2>Winners so far</h2>
+    <p class="sub">Every player wins something. Good luck!</p>
+    <ul class="rows" id="rows"></ul>
+    <div class="meter"><span>Players so far</span><span id="playedCount">0</span></div>
+    <div class="status" style="justify-content:flex-end"><button id="mute" class="mute" type="button" aria-pressed="false">Sound on</button></div>
+
+    <details id="hostBox">
+      <summary aria-label="Host controls"></summary>
+      <div class="host">
+        <div class="status"><span id="status"><span class="dot local"></span>Connecting…</span></div>
+        <div>
+          <h3>Recent draws</h3>
+          <ul class="log" id="log"></ul>
+        </div>
+        <div>
+          <h3>New round</h3>
+          <div class="setup">
+            <label for="setFirst">1st<input id="setFirst" type="number" min="0" max="999" value="1"></label>
+            <label for="setSecond">2nd<input id="setSecond" type="number" min="0" max="999" value="3"></label>
+            <label for="setThird">3rd<input id="setThird" type="number" min="0" max="999" value="15"></label>
+            <label for="setSpecial">Special<input id="setSpecial" type="number" min="0" max="999" value="15"></label>
+            <label for="setTotal">Players<input id="setTotal" type="number" min="1" max="5000" value="200"></label>
+            <label for="setFirstNear">1st near #<input id="setFirstNear" type="number" min="1" max="5000" value="100"></label>
+          </div>
+        </div>
+        <button id="reset" class="reset" type="button">Reset and start a new round</button>
+        <p class="note">The 1st prize is locked to one secret draw within 5 of the "1st near #" number (default: somewhere between draw 95 and 105). 2nd prizes are spread out with one in each third of the round, and 3rd and Special prizes each come out about every 13 draws at a random spot. Everyone else gets candy. Every prize is gone by the last expected draw.</p>
+      </div>
+    </details>
+  </aside>
+</main>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg";
+  const $ = id => document.getElementById(id);
+  const PRIZES = {
+    first:  {label:"1st Prize", kicker:"Jackpot!", color:"#f2c14e", body:"You won the 1st prize! Show this screen to the Hirediversity team to collect it."},
+    second: {label:"2nd Prize", kicker:"Big win!", color:"#c7d0d8", body:"You won a 2nd prize! Show this screen to the Hirediversity team to collect it."},
+    third:  {label:"3rd Prize", kicker:"Winner!", color:"#d39a6a", body:"You won a 3rd prize! Show this screen to the Hirediversity team to collect it."},
+    special:{label:"Special Prize", title:"Enjoy the snacks!", kicker:"Special prize", color:"#e889a8", body:"You won our special snack prize! Show this screen to the Hirediversity team to pick yours up."},
+    none:   {label:"Here's your candy!", kicker:"Sweet treat", color:"#d6534a", body:"Thanks for playing! Grab a candy from the Hirediversity team."}
+  };
+  const picks = Array.from(document.querySelectorAll(".pick"));
+  const DEFAULT = {first:1, second:3, third:15, special:15, total:200, firstNear:100};
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const SPEED = reduce ? 0.35 : 1;
+
+  /* Decide in advance which draw numbers win what.
+     1st: one secret draw near firstNear (±5). 2nd: one per equal slice of the round, near the middle of each slice.
+     3rd: one per equal slice (200 / 15 ≈ every 13 draws), at a random spot inside each slice. */
+  function buildSchedule(counts, start, end, firstAt, taken){
+    const sched={first:[], second:[], third:[], special:[]}, used=new Set(taken||[]);
+    const span=end-start+1;
+    if(span<=0) return sched;
+    const take = (lo,hi) => {
+      lo=Math.max(start,lo); hi=Math.min(end,hi);
+      let free=[]; for(let i=lo;i<=hi;i++) if(!used.has(i)) free.push(i);
+      if(!free.length){ for(let i=start;i<=end;i++) if(!used.has(i)) free.push(i); }
+      if(!free.length) return null;
+      const s=free[Math.floor(rand()*free.length)]; used.add(s); return s;
+    };
+    for(let i=0;i<(counts.first||0);i++){
+      const s = i===0 ? take(firstAt, firstAt) : take(start, end);
+      if(s!=null) sched.first.push(s);
+    }
+    const spread = (k, middleOnly) => {
+      const c=counts[k]||0;
+      for(let i=0;i<c;i++){
+        const lo=start+Math.floor(i*span/c), hi=start+Math.floor((i+1)*span/c)-1;
+        const q=middleOnly ? Math.floor((hi-lo)/4) : 0;
+        const s=take(lo+q, hi-q); if(s!=null) sched[k].push(s);
+      }
+    };
+    spread("second", true);
+    spread("third", false);
+    spread("special", false);
+    for(const k in sched) sched[k].sort((a,b)=>a-b);
+    return sched;
+  }
+  const jitter5 = () => Math.round(rand()*10-5);
+  const makePool = (c) => ({first:c.first, second:c.second, third:c.third, special:c.special, total:c.total, played:0, initial:{...c},
+    schedule:buildSchedule(c, 1, c.total, Math.min(Math.max(1,(c.firstNear||100)+jitter5()), c.total)), log:[], round:Date.now()});
+  let pool = makePool(DEFAULT);
+  let store = null, ready = false, readOnly = false, busy = false;
+
+  /* ---------- drawing helpers ---------- */
+  function el(tag, attrs, parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+  function capsule(parent, topColor, star){
+    const g = el("g",{},parent);
+    el("circle",{r:21, fill:"#f6efd9"},g);
+    el("path",{d:"M-21 0 A21 21 0 0 1 21 0 Z", fill:topColor},g);
+    if(star) el("use",{href:"#star", x:-10, y:-7, width:20, height:20, fill:"#f2c14e", stroke:"#24313d","stroke-width":1.2},g);
+    else el("circle",{cx:0, cy:9, r:3.2, fill:topColor, stroke:"#24313d","stroke-width":1.5},g);
+    el("line",{x1:-21,y1:0,x2:21,y2:0,stroke:"#24313d","stroke-width":2},g);
+    el("circle",{r:21, fill:"none", stroke:"#24313d","stroke-width":2.5},g);
+    el("path",{d:"M-12 -12 A16 16 0 0 1 2 -17", fill:"none", stroke:"#fff","stroke-width":3,"stroke-linecap":"round",opacity:.8},g);
+    return g;
+  }
+  // marquee bulbs along the arch
+  (function(){ const path=$("bulbPath"), L=path.getTotalLength(), n=17;
+    for(let i=0;i<n;i++){ const pt=path.getPointAtLength(L*i/(n-1)); el("circle",{class:"lamp",cx:pt.x.toFixed(1),cy:pt.y.toFixed(1),r:3.6},$("lamps")); } })();
+  const PILE=["#a9d3c8"];
+
+  // balls in the pile
+  const ballsG = $("balls");
+  const SPOTS = [[142,308],[186,309],[230,308],[274,309],[318,308],[164,272],[208,271],[252,272],[296,271],[230,236],[186,238]];
+  const balls = SPOTS.map(([cx,cy], i) => {
+    const g = el("g",{},ballsG);
+    const b = {cx, cy, x:cx, y:cy, rot:Math.round(Math.random()*80-40), g};
+    capsule(g, PILE[i%PILE.length]);
+    place(b); return b;
+  });
+  function place(b, extra=0){ b.g.setAttribute("transform",`translate(${b.x.toFixed(1)} ${b.y.toFixed(1)}) rotate(${(b.rot+extra).toFixed(1)})`); }
+
+  /* ---------- claw state ---------- */
+  const HOME_X=200, HOME_Y=150, CHUTE_X=83, RIM_CX=116, RIM_CY=256;
+  const S = {x:HOME_X, y:HOME_Y, a:0, slip:0, spin:0, held:null};
+  const PIVOT_Y=135;
+  // pendulum: the claw hangs on its cable, so it swings by itself when the carriage starts and stops
+  const P = {th:0, w:0, px:HOME_X, vx:0, ax:0, last:0};
+  const claw=$("claw"), cable=$("cable"), head=$("head"), pL=$("prongL"), pR=$("prongR");
+  function draw(){
+    const deg=P.th*180/Math.PI;
+    claw.setAttribute("transform",`translate(${S.x.toFixed(1)} 0)`);
+    cable.setAttribute("y2", (S.y-5).toFixed(1));
+    cable.setAttribute("transform",`rotate(${deg.toFixed(2)} 0 ${PIVOT_Y})`);
+    head.setAttribute("transform",`rotate(${deg.toFixed(2)} 0 ${PIVOT_Y}) translate(0 ${S.y.toFixed(1)})`);
+    pL.setAttribute("transform",`rotate(${S.a.toFixed(1)} -8 8)`);
+    pR.setAttribute("transform",`rotate(${(-S.a).toFixed(1)} 8 8)`);
+    if(S.held){
+      const d=S.y+29+S.slip-PIVOT_Y;
+      S.held.x=S.x-d*Math.sin(P.th); S.held.y=PIVOT_Y+d*Math.cos(P.th); place(S.held, deg+S.spin+P.w*6);
+    }
+  }
+  function phys(now){
+    if(P.last){
+      const dt=Math.min(1/30, Math.max(1/240, (now-P.last)/1000));
+      const vx=(S.x-P.px)/dt, ax=(vx-P.vx)/dt;
+      P.ax=P.ax*.55+ax*.45; P.px=S.x; P.vx=vx;
+      const L=Math.max(30, S.y+29+S.slip-PIVOT_Y);
+      if(!P.driven){
+        P.w += ((P.ax/L)*Math.cos(P.th) - (3000/L)*Math.sin(P.th) - 1.9*P.w)*dt;
+        P.th = Math.max(-.62, Math.min(.62, P.th + P.w*dt));
+      }
+      draw();
+    }
+    P.last=now; requestAnimationFrame(phys);
+  }
+  if(!reduce) requestAnimationFrame(phys);
+  const jolt = v => { if(!reduce) P.w += v; };
+  // let go of the held capsule, keeping its current swing angle
+  // sideways speed of the held capsule right now (carriage motion + swing), px/s
+  function heldVx(){ const d=S.y+29+S.slip-PIVOT_Y; return Math.max(-260, Math.min(260, P.vx - d*Math.cos(P.th)*P.w)); }
+  // resolve at the end of the current swing (angular speed changes sign), or after maxMs
+  function waitPeak(maxMs){ const s0=Math.sign(P.w), t0=performance.now();
+    return new Promise(res=>{ (function f(){ if((s0 && Math.sign(P.w)!==s0) || performance.now()-t0>maxMs*SPEED) res(); else requestAnimationFrame(f); })(); }); }
+  // a dropped capsule keeps its momentum, lands on the pile (or the chute's edge) and rolls back to its spot
+  function dropFree(b, vx, lip){
+    return new Promise(res=>{
+      let x=b.x, y=b.y, vy=30, last=performance.now();
+      const endY=lip?236:226, spin=vx*.9;
+      (function f(now){
+        const dt=Math.min(.033,(now-last)/1000)/SPEED; last=now;
+        vy+=1500*dt; x+=vx*dt; y+=vy*dt; b.rot+=spin*dt;
+        x = lip ? Math.max(x,126) : Math.max(124, Math.min(332, x));
+        b.x=x; b.y=Math.min(y,endY); place(b);
+        if(y>=endY) res(); else requestAnimationFrame(f);
+      })(last);
+    }).then(()=> lip ? (tone(140,.12,"square",.07), slipBack(b,1150,34)) : slipBack(b, 900, 16));
+  }
+  // capsule lands on the chute's rim and wobbles there; outward=true rolls back to the pile side, false tips in
+  async function teeter(b, outward){
+    const cx=RIM_CX, cy=RIM_CY, R=21, fx=b.x, fy=b.y;
+    sfx.drop();
+    await tween(320, k=>{ b.x=fx+(cx-fx)*k; b.y=fy+((cy-R)-fy)*k; place(b); }, easeIn);
+    tone(140,.12,"square",.07);
+    const r1=b.rot, fin=outward?1:-1; let lastS=0;
+    await tween(1900, k=>{
+      // wobble first leans the "wrong" way, then commits
+      let ph=0.32*Math.exp(-2*k)*Math.sin(k*Math.PI*5)*(outward?-1:1);
+      if(k>.62){ const q=(k-.62)/.38; ph+=fin*q*q*1.05; }
+      b.x=cx+R*Math.sin(ph); b.y=cy-R*Math.cos(ph); b.rot=r1+ph*57.3; place(b);
+      const sg=Math.sign(Math.sin(k*Math.PI*5)); if(k<.62 && sg!==lastS){ lastS=sg; tick(); }
+    }, t=>t);
+  }
+  // from wherever it is, drop down the chute and out of sight
+  async function intoChute(b){
+    const fx=b.x, fy=b.y;
+    sfx.drop();
+    await tween(520, k=>{ b.x=fx+(CHUTE_X-fx)*Math.min(1,k*2); b.y=fy+(400-fy)*k; place(b); }, easeIn);
+    b.g.style.opacity="0";
+  }
+  // slipped out while moving: flies on with its momentum, clips the rim, and drops in
+  async function arcIntoChute(b){
+    const fx=b.x, fy=b.y, fr=b.rot; let clunk=false;
+    await tween(700, k=>{
+      b.x=fx+(CHUTE_X-fx)*ease(Math.min(1,k*1.25));
+      b.y=fy-16*Math.sin(Math.PI*Math.min(1,k*1.6))+(400-fy)*Math.pow(k,2.6);
+      b.rot=fr-200*k; place(b);
+      if(!clunk && k>.42){ clunk=true; tone(140,.1,"square",.06); }
+    }, t=>t);
+    sfx.drop();
+    b.g.style.opacity="0";
+  }
+  function release(){ const b=S.held; S.held=null; b.rot+=P.th*180/Math.PI+S.spin; S.slip=0; S.spin=0; return b; }
+  // Big, goofy swing right after the grab: the carriage lurches and the claw swings wide,
+  // the capsule flops around in the grip. endAtPeak stops at the far end of a swing (to fling it from there).
+  async function wildSwing(cycles, maxDeg, opts={}){
+    const x0=S.x, slip0=S.slip, d=Math.max(30, S.y+29+S.slip-PIVOT_Y);
+    let A=16, th=maxDeg*Math.PI/180;
+    const room=Math.max(0, Math.min(x0-78, 322-x0)), reach=A+d*Math.sin(th);
+    if(reach>room){ const f=room/reach; A*=f; th=Math.asin(Math.min(1,(d*Math.sin(th)*f)/d)); }
+    const dir=rand()<.5?-1:1, cyc=cycles+(opts.endAtPeak?0.25:0);
+    let lastSign=0;
+    P.driven=true;
+    await tween(cyc*560, k=>{
+      const ph=k*cyc*2*Math.PI, s=Math.sin(ph)*dir, g=0.35+0.65*k;
+      S.x=x0+A*s*g;
+      P.th=-th*s*g;
+      S.spin=Math.sin(ph*2)*16*g;
+      S.slip=slip0+((opts.slip??slip0)-slip0)*k+Math.abs(s)*4*g;
+      S.a=Math.abs(s)*4*g+(opts.slip?opts.slip*.6*k:0);
+      const sg=Math.sign(Math.cos(ph)); if(sg && sg!==lastSign){ lastSign=sg; tone(150+160*g,.16,"triangle",.05); }
+      draw();
+    }, t=>t);
+    P.w=0; P.driven=false;
+    if(!opts.endAtPeak){ await anim({x:x0, spin:0, a:0}, 300); }
+  }
+  draw();
+
+  const ease = t => t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+  const easeIn = t => t*t;
+  const bounce = t => { const n=7.5625,d=2.75; if(t<1/d) return n*t*t; if(t<2/d) return n*(t-=1.5/d)*t+.75; if(t<2.5/d) return n*(t-=2.25/d)*t+.9375; return n*(t-=2.625/d)*t+.984375; };
+  function tween(ms, fn, e=ease){ ms*=SPEED; return new Promise(res=>{ const t0=performance.now(); function f(now){ const t=Math.min(1,(now-t0)/ms); fn(e(t)); if(t<1) requestAnimationFrame(f); else res(); } requestAnimationFrame(f); }); }
+  function anim(to, ms, e){ const from={}; for(const k in to) from[k]=S[k]; return tween(ms, k=>{ for(const p in to) S[p]=from[p]+(to[p]-from[p])*k; draw(); }, e); }
+  const wait = ms => new Promise(r=>setTimeout(r, ms*SPEED));
+  const tick = () => tone(900+rand()*500,.03,"square",.03);
+  // the capsule bounces a little in the grip when the claw stops hard (a "boing", not a shake)
+  async function bob(amp, ms){
+    const s0=S.slip;
+    await tween(ms, k=>{ S.slip=s0+amp*Math.exp(-4.5*k)*Math.sin(k*Math.PI*5); draw(); }, t=>t);
+    S.slip=s0;
+  }
+  // capsule falls back to its spot in the pile with a bounce and a spin (hop = little upward arc)
+  async function slipBack(b, ms, hop){
+    const fx=b.x, fy=b.y, fr=b.rot, spin=(rand()<.5?-1:1)*(140+rand()*200);
+    sfx.drop();
+    await tween(ms, k=>{ b.y=fy+(b.cy-fy)*bounce(k) - hop*Math.sin(Math.PI*Math.min(1,k*1.8)); b.x=fx+(b.cx-fx)*ease(k); b.rot=fr+spin*ease(k); place(b); }, t=>t);
+    b.x=b.cx; b.y=b.cy; b.rot=Math.round(((b.rot%360)+360)%360); place(b);
+  }
+
+  /* ---------- sound ---------- */
+  let ac=null, muted=false;
+  function tone(freq, dur, type="square", vol=.05, delay=0){
+    if(muted) return;
+    try{
+      ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+      const t=ac.currentTime+delay, o=ac.createOscillator(), g=ac.createGain();
+      o.type=type; o.frequency.setValueAtTime(freq,t);
+      g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+      o.connect(g).connect(ac.destination); o.start(t); o.stop(t+dur+.02);
+    }catch(e){}
+  }
+  const sfx = {
+    move(){ tone(110,.5,"sawtooth",.025); },
+    grab(){ tone(220,.08,"square",.05); tone(160,.1,"square",.05,.08); },
+    drop(){ tone(520,.08,"triangle",.07); tone(300,.12,"triangle",.07,.09); },
+    win(){ [523,659,784,1047].forEach((f,i)=>tone(f,.22,"square",.05,i*.11)); },
+    lose(){ tone(330,.2,"triangle",.06); tone(247,.35,"triangle",.06,.2); }
+  };
+  $("mute").addEventListener("click", ()=>{ muted=!muted; $("mute").textContent = muted ? "Sound off" : "Sound on"; $("mute").setAttribute("aria-pressed", String(muted)); });
+
+  /* ---------- confetti ---------- */
+  const cv=$("confetti"), cx=cv.getContext("2d");
+  function confetti(colors, count=140){
+    if(reduce) return;
+    const dpr=devicePixelRatio||1; cv.width=innerWidth*dpr; cv.height=innerHeight*dpr; cx.setTransform(dpr,0,0,dpr,0,0);
+    const parts=Array.from({length:count},()=>({x:innerWidth/2+(Math.random()-.5)*120, y:innerHeight*.35, vx:(Math.random()-.5)*12, vy:-Math.random()*12-4, r:Math.random()*6+4, c:colors[Math.floor(Math.random()*colors.length)], s:Math.random()*6, w:Math.random()*.3}));
+    const t0=performance.now();
+    (function f(now){
+      const t=now-t0; cx.clearRect(0,0,innerWidth,innerHeight);
+      parts.forEach(p=>{ p.vy+=.35; p.vx*=.99; p.x+=p.vx; p.y+=p.vy; p.s+=p.w; cx.save(); cx.translate(p.x,p.y); cx.rotate(p.s); cx.fillStyle=p.c; cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2); cx.restore(); });
+      if(t<3200) requestAnimationFrame(f); else cx.clearRect(0,0,innerWidth,innerHeight);
+    })(t0);
+  }
+
+  /* ---------- draw logic ---------- */
+  function rand(){ const a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]/4294967296; }
+  function pickOutcome(p){
+    const n=p.played+1, ks=["first","second","third","special"], sc=p.schedule||{};
+    for(const k of ks) if(p[k]>0 && (sc[k]||[]).includes(n)) return k;
+    // safety net: a prize whose slot was missed comes out on the next free draw
+    for(const k of ks){ const future=(sc[k]||[]).filter(s=>s>n).length; if(p[k]>future) return k; }
+    return "none";
+  }
+
+  /* ---------- render board ---------- */
+  function chip(color){ return `<svg class="chip" viewBox="-24 -24 48 48" aria-hidden="true"><circle r="21" fill="#f6efd9"/><path d="M-21 0 A21 21 0 0 1 21 0 Z" fill="${color}"/><line x1="-21" x2="21" stroke="#24313d" stroke-width="2.5"/><circle r="21" fill="none" stroke="#24313d" stroke-width="3"/></svg>`; }
+  function render(){
+    const rows=$("rows"); rows.innerHTML="";
+    const won={first:0,second:0,third:0,special:0}; pool.log.forEach(it=>{ if(won[it.r]!=null) won[it.r]++; });
+    ["first","second","third","special"].forEach(k=>{
+      // winners so far (never how many are left)
+      const count=Math.max(won[k], (pool.initial[k]||0)-pool[k]);
+      const li=document.createElement("li"); li.className="row";
+      li.innerHTML=chip(PRIZES[k].color)+`<span class="name"></span><span class="count"></span>`;
+      li.querySelector(".name").textContent=PRIZES[k].label;
+      li.querySelector(".count").innerHTML=`${count} <small>won</small>`;
+      rows.appendChild(li);
+    });
+    $("playedCount").textContent=String(pool.played);
+    $("disp").textContent=String(Math.min(pool.played+1,999)).padStart(3,"0");
+    const log=$("log"); log.innerHTML="";
+    const items=pool.log.slice(-60).reverse();
+    if(!items.length){ const li=document.createElement("li"); li.innerHTML='<span class="empty">No draws yet this round.</span>'; li.style.display="block"; log.appendChild(li); }
+    items.forEach(it=>{
+      const li=document.createElement("li"); if(it.r!=="none") li.className="win";
+      const d=new Date(it.t);
+      li.innerHTML=`<span class="n"></span><span class="r"></span><span class="t"></span>`;
+      li.querySelector(".n").textContent="#"+it.n;
+      li.querySelector(".r").textContent=it.r==="none"?"Candy":PRIZES[it.r].label;
+      li.querySelector(".t").textContent=d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+      log.appendChild(li);
+    });
+    updateStart();
+  }
+  function updateStart(){
+    const hint=$("hint"), off = !ready || busy || readOnly || !$("result").hidden;
+    picks.forEach(b=>b.disabled=off);
+    hint.classList.toggle("warn", readOnly);
+    if(!ready){ hint.textContent="Connecting…"; return; }
+    if(readOnly){ hint.textContent="This link is view-only for you. Open it signed in as the host to run draws."; return; }
+    const prizes=pool.first+pool.second+pool.third;
+    if(busy) hint.textContent="Good luck…";
+    else hint.textContent="";
+  }
+  function setStatus(mode){
+    const s=$("status");
+    s.innerHTML = mode==="db" ? '<span class="dot"></span>Saved to the shared prize pool' : '<span class="dot local"></span>Saved on this device only';
+  }
+
+  /* ---------- storage ---------- */
+  function normalize(d){
+    const n = v => Math.max(0, Math.floor(Number(v)||0));
+    const p = {first:n(d.first), second:n(d.second), third:n(d.third), special: d.special===undefined ? DEFAULT.special : n(d.special), total:Math.max(1,n(d.total)), played:n(d.played), round:d.round||0,
+      initial: d.initial ? {first:n(d.initial.first), second:n(d.initial.second), third:n(d.initial.third), special: d.initial.special===undefined ? DEFAULT.special : n(d.initial.special), total:n(d.initial.total), firstNear:n(d.initial.firstNear)||100} : {...DEFAULT},
+      log: Array.isArray(d.log) ? d.log.filter(x=>x && typeof x.n==="number" && PRIZES[x.r]).slice(-400) : []};
+    const s=d.schedule;
+    if(s && typeof s==="object" && ["first","second","third"].every(k=>Array.isArray(s[k]))){
+      p.schedule={}; ["first","second","third"].forEach(k=>p.schedule[k]=s[k].map(n).filter(Boolean));
+      if(Array.isArray(s.special)) p.schedule.special=s.special.map(n).filter(Boolean);
+      else {
+        // round started before special prizes existed: spread them over the draws that are left
+        const taken=[...p.schedule.first, ...p.schedule.second, ...p.schedule.third];
+        p.schedule.special=buildSchedule({special:p.special}, p.played+1, p.total, 1, taken).special;
+        p._new=true;
+      }
+    } else {
+      // older rounds had no schedule: plan the remaining prizes over the remaining draws
+      const start=p.played+1;
+      const old=Array.isArray(d.firstSlots) ? d.firstSlots.map(n).find(x=>x>=start) : null;
+      const near=old || Math.max(start, (p.initial.firstNear||100) + (Math.floor(Number(d.round)||0)%11) - 5);
+      p.schedule=buildSchedule({first:p.first, second:p.second, third:p.third, special:p.special}, start, p.total, Math.min(near, p.total));
+      p._new=true;
+    }
+    return p;
+  }
+  const LS_KEY="hire-lucky-draw-pool";
+  function localStore(){
+    return {
+      mode:"local",
+      async load(){ try{ const v=localStorage.getItem(LS_KEY); if(v) return normalize(JSON.parse(v)); }catch(e){} return null; },
+      async save(p){ try{ localStorage.setItem(LS_KEY, JSON.stringify(p)); }catch(e){} },
+      subscribe(){}
+    };
+  }
+  function dbStore(db){
+    const ref=db.doc("draw/pool");
+    return {
+      mode:"db",
+      async load(){ const s=await ref.get(); return s.exists ? normalize(s.data()) : null; },
+      async save(p){ await ref.set(JSON.parse(JSON.stringify(p))); },
+      subscribe(cb){ ref.onSnapshot(s=>{ if(s.exists) cb(normalize(s.data())); }, ()=>{}); }
+    };
+  }
+  async function init(){
+    let db=null;
+    try{ db = window.claude && window.claude.use ? await window.claude.use("db") : null; }catch(e){ db=null; }
+    store = db ? dbStore(db) : localStore();
+    try{
+      const existing = await store.load();
+      if(existing){
+        pool=existing;
+        if(pool._new){ delete pool._new; try{ await store.save(pool); }catch(e){} }
+      }
+      else { try{ await store.save(pool); }catch(e){ readOnly=true; } }
+    }catch(e){
+      store = localStore(); const ex=await store.load(); if(ex) pool=ex;
+    }
+    store.subscribe(p=>{ if(!busy && !p._new){ pool=p; render(); } });
+    setStatus(store.mode);
+    ["First","Second","Third","Special","Total"].forEach(k=>{ $("set"+k).value = pool.initial[k.toLowerCase()] ?? DEFAULT[k.toLowerCase()]; });
+    $("setFirstNear").value = pool.initial.firstNear || 100;
+    ready=true; render();
+  }
+
+  /* ---------- play ---------- */
+  let wakeLock=null;
+  async function keepAwake(){ try{ if(!wakeLock && navigator.wakeLock) { wakeLock=await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release",()=>wakeLock=null); } }catch(e){} }
+
+  async function play(){
+    if(!ready || busy || readOnly || !$("result").hidden) return;
+    busy=true; updateStart(); keepAwake();
+    const next = JSON.parse(JSON.stringify(pool));
+    const outcome = pickOutcome(next);
+    next.played += 1;
+    if(outcome!=="none") next[outcome] -= 1;
+    next.log.push({n:next.played, r:outcome, t:Date.now()});
+    if(next.log.length>400) next.log=next.log.slice(-400);
+    try{ await store.save(next); }
+    catch(e){
+      busy=false;
+      if(e && e.code==="invalid_argument"){ readOnly=true; }
+      else { $("hint").textContent="Couldn't save this draw. Check the connection and press START again."; $("hint").classList.add("warn"); }
+      picks.forEach(b=>b.classList.remove("picked")); updateStart(); return;
+    }
+    pool = next; render();
+    $("machine").classList.add("playing");
+
+    // choose a capsule from the top of the pile
+    const candidates = balls.filter(b=>b.g.style.opacity!=="0").sort((a,b)=>a.cy-b.cy).slice(0,5);
+    const target = candidates[Math.floor(rand()*candidates.length)];
+    // bring target to front
+    ballsG.appendChild(target.g);
+
+    sfx.move();
+    await anim({a:26}, 260);
+    await anim({x: target.cx + (rand()*6-3)}, 950);
+    sfx.move();
+    await anim({y: target.cy-29}, 950);
+    sfx.grab();
+    await anim({a:0}, 300);
+    S.held = target;
+    await wait(180);
+
+    // the lift and carry look the same for every outcome; the claw just sways naturally on its cable
+    const CARRY_Y=HOME_Y+15, dir=Math.sign(CHUTE_X-S.x)||-1;
+    const missStyle=Math.floor(rand()*5), winStyle=Math.floor(rand()*2);
+    const RIM_X=116;
+
+    if(outcome==="none" && missStyle===3){
+      // MISS 3 "Top bump": the grip loosens near the top and the jolt when the lift stops knocks it out
+      sfx.move();
+      const y0=S.y, s0=S.slip; let tk=false;
+      await tween(1400, k=>{
+        S.y=y0+(CARRY_Y-y0)*ease(k);
+        if(k>.55){ const q=(k-.55)/.45; if(!tk){ tk=true; tick(); } S.slip=s0+7*q; S.a=6*q; }
+        draw();
+      }, t=>t);
+      jolt((rand()<.5?-1:1)*1.8);
+      await wait(260);
+      const v=heldVx(); await dropFree(release(), v, false);
+      S.slip=0;
+      await anim({y:HOME_Y, a:0}, 600);
+      await anim({x:HOME_X}, 800);
+    } else {
+      sfx.move();
+      await anim({y:CARRY_Y}, 1300);
+      jolt((rand()<.5?-1:1)*.6);
+      await wait(450+rand()*350);
+
+      if(outcome==="none"){
+        let fall=null;
+        if(missStyle<2){
+          // MISS 0/1: the grip slowly gives while it swings along; slides out early (0) or late (1)
+          const relAt = missStyle===0 ? .32+rand()*.18 : .66+rand()*.18, loosen=relAt-.2;
+          const x0=S.x, s0=S.slip;
+          let ticked=false;
+          sfx.move(); jolt(dir*1.3);
+          await tween(1600, k=>{
+            S.x=x0+(CHUTE_X-x0)*ease(k);
+            if(S.held && k>=loosen){
+              const q=Math.min(1,(k-loosen)/(relAt-loosen));
+              if(!ticked){ ticked=true; tick(); }
+              S.slip=s0+9*q*q; S.a=8*q;
+              if(k>=relAt){ const v=heldVx(); fall=dropFree(release(), v, false); }
+            }
+            draw();
+          }, t=>t);
+          jolt(-dir*1.2);
+          await wait(350);
+          await anim({a:26}, 220);   // opens over the chute... nothing in it
+          await wait(300);
+        } else if(missStyle===2){
+          // MISS 2: carried all the way; the stop swings it forward and it slides off onto the chute's edge
+          sfx.move(); jolt(dir*1.3);
+          await anim({x:CHUTE_X+46}, 1500);
+          jolt(-dir*2.2);
+          tick();
+          anim({slip:S.slip+6, a:7}, 260);
+          await waitPeak(800);
+          const v=heldVx(); fall=dropFree(release(), v, true);
+        } else {
+          // MISS 4 "So close!": opens over the rim, the capsule teeters on the edge... and rolls back out
+          sfx.move(); jolt(dir*1.3);
+          await anim({x:RIM_X}, 1600);
+          jolt(-dir*1.4);
+          await wait(800+rand()*400);
+          await anim({a:26}, 220);
+          const bb=release();
+          await teeter(bb, true);
+          fall=slipBack(bb, 1000, 22);
+        }
+        if(fall) await fall;
+        S.slip=0;
+        await anim({y:HOME_Y, a:0}, 600);
+        await anim({x:HOME_X}, 800);
+      } else {
+        if(winStyle===0){
+          // WIN A "Teeter... and in!": same as the rim miss, but it tips the right way
+          sfx.move(); jolt(dir*1.3);
+          await anim({x:RIM_X}, 1600);
+          jolt(-dir*1.4);
+          await wait(800+rand()*400);
+          await anim({a:26}, 220);
+          const bb=release();
+          await teeter(bb, false);
+          await intoChute(bb);
+        } else {
+          // WIN B "Slipped... into the chute!": the grip gives just before the chute, momentum carries it in
+          const x0=S.x, s0=S.slip, loosenX=CHUTE_X+100, relX=CHUTE_X+44;
+          let ticked=false, fall=null;
+          sfx.move(); jolt(dir*1.3);
+          await tween(1600, k=>{
+            S.x=x0+(CHUTE_X-x0)*ease(k);
+            if(S.held && S.x<=loosenX){
+              const q=Math.min(1,(loosenX-S.x)/(loosenX-relX));
+              if(!ticked){ ticked=true; tick(); }
+              S.slip=s0+9*q*q; S.a=8*q;
+              if(S.x<=relX) fall=arcIntoChute(release());
+            }
+            draw();
+          }, t=>t);
+          jolt(-dir*1.2);
+          if(fall) await fall;
+        }
+        showDoorBall(PRIZES[outcome].color);
+        anim({a:0, slip:0}, 400).then(()=>anim({x:HOME_X}, 900));
+        await wait(650);
+      }
+    }
+    $("machine").classList.remove("playing");
+    showResult(outcome, next.played);
+  }
+
+  function showDoorBall(color){
+    const g=$("doorBall"); g.innerHTML="";
+    const inner=capsule(g, color, true);
+    g.setAttribute("opacity","1");
+    tween(420, k=>{ inner.setAttribute("transform",`translate(126 ${(430+ (470-430)*k).toFixed(1)}) rotate(${(-30+30*k).toFixed(1)})`); }, bounce);
+  }
+
+  // wrapped candy for the "every player wins" result
+  function candy(parent){
+    const g=el("g",{transform:"rotate(-18)"},parent);
+    el("path",{d:"M-13 0 L-27 -11 L-24 0 L-27 11 Z", fill:"#f2c14e", stroke:"#24313d","stroke-width":2,"stroke-linejoin":"round"},g);
+    el("path",{d:"M13 0 L27 -11 L24 0 L27 11 Z", fill:"#f2c14e", stroke:"#24313d","stroke-width":2,"stroke-linejoin":"round"},g);
+    el("circle",{r:15, fill:"#d6534a", stroke:"#24313d","stroke-width":2.5},g);
+    el("path",{d:"M-8 -11 Q2 -2 -6 12 M2 -14 Q10 -2 4 13", fill:"none", stroke:"#fff","stroke-width":3,"stroke-linecap":"round",opacity:.75},g);
+    return g;
+  }
+  function showResult(outcome, n){
+    const P=PRIZES[outcome];
+    const svg=$("resBall"); svg.innerHTML="";
+    if(outcome==="none") candy(svg); else capsule(svg, P.color, true);
+    $("resKicker").textContent=P.kicker;
+    $("resTitle").textContent=P.title||P.label;
+    $("resBody").textContent=P.body;
+    $("resNo").textContent=`Play #${n}`;
+    $("result").hidden=false;
+    $("next").focus();
+    if(outcome==="none"){ sfx.win(); confetti(["#d6534a","#f2c14e","#a9d3c8","#5f88a8"], 50); }
+    else { sfx.win(); confetti(outcome==="first" ? ["#f2c14e","#d6534a","#5f88a8","#fff8e4"] : [P.color,"#5f88a8","#a9d3c8","#f2c14e"]); }
+    busy=false; updateStart();
+  }
+
+  function nextPlayer(){
+    $("result").hidden=true;
+    $("doorBall").setAttribute("opacity","0");
+    // refill any taken capsule at its spot
+    balls.forEach(b=>{ if(b.g.style.opacity==="0"){ b.x=b.cx; b.y=b.cy; b.rot=Math.round(rand()*80-40); place(b); b.g.style.transition="opacity .5s"; b.g.style.opacity="1"; } });
+    if(store) store.load().then(p=>{ if(p && !busy){ pool=p; render(); } }).catch(()=>{});
+    picks.forEach(b=>b.classList.remove("picked"));
+    updateStart(); picks[1].focus();
+  }
+
+  // three "lucky" buttons: they all just start the draw
+  picks.forEach(b=>b.addEventListener("click", ()=>{ if(b.disabled) return; picks.forEach(x=>x.classList.toggle("picked", x===b)); play(); }));
+  $("redBtn").addEventListener("click", play);
+  $("next").addEventListener("click", nextPlayer);
+
+  /* ---------- host reset ---------- */
+  let armT=null;
+  $("reset").addEventListener("click", async ()=>{
+    const btn=$("reset");
+    if(busy || readOnly) return;
+    if(!btn.classList.contains("arm")){
+      btn.classList.add("arm");
+      btn.textContent=`Click again to confirm. This clears all ${pool.played} draws.`;
+      clearTimeout(armT); armT=setTimeout(()=>{ btn.classList.remove("arm"); btn.textContent="Reset and start a new round"; }, 5000);
+      return;
+    }
+    clearTimeout(armT);
+    const v = k => Math.max(0, Math.floor(Number($("set"+k).value)||0));
+    const cfg={first:v("First"), second:v("Second"), third:v("Third"), special:v("Special"), total:Math.max(1,v("Total")), firstNear:Math.max(1,v("FirstNear"))};
+    const p=makePool(cfg);
+    try{ await store.save(p); pool=p; btn.textContent="New round started"; }
+    catch(e){ btn.textContent="Couldn't reset. Try again."; }
+    btn.classList.remove("arm");
+    setTimeout(()=>{ btn.textContent="Reset and start a new round"; }, 2500);
+    render();
+  });
+
+  if(location.hash==="#play") document.body.classList.add("kiosk");
+  render();
+  init();
+})();
+</script>
+
+</body>
+</html>
